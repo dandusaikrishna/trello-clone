@@ -116,8 +116,6 @@ export default function BoardsListing() {
           boards={boards}
           isLoading={isLoading}
         />
-          isLoading={isLoading}
-        />
       </main>
 
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
