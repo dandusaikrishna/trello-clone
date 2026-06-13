@@ -13,8 +13,8 @@ const prisma = new PrismaClient({ adapter });
 const users = [
   {
     name: "Swaroop",
-    email: "swaroopch1234@gmail.com",
-    password: "password123",
+    email: "saidandu92@gmail.com",
+    password: "123456",
   },
   { name: "John", email: "john@example.com", password: "password123" },
   { name: "Alice", email: "alice@example.com", password: "password123" },
@@ -242,7 +242,7 @@ async function main() {
   });
 
   console.log("Database seeded successfully");
-  console.log("Login with swaroopch1234@gmail.com / password123");
+  console.log("Login with saidandu92@gmail.com / 123456");
 }
 
 main()

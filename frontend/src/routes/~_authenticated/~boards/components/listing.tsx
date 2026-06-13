@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Plus, Star, AlertCircle } from "lucide-react";
 import TrelloLogo from "@/components/molecules/trello-logo";
 import { useState } from "react";
@@ -16,12 +16,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import useAuth from "@/hooks/apis/use-auth";
 import useBoards from "@/hooks/apis/use-boards";
 import useWorkspaces from "@/hooks/apis/use-workspaces";
-import { dummyBoards } from "@/lib/dummy-data";
+import { dummyBoards, dummyUser } from "@/lib/dummy-data";
 import { BOARD_BACKGROUNDS, TRELLO_NAV_BG } from "@/lib/constants";
 import type { BOARD } from "@/lib/types";
 import { cn, getBoardBackgroundStyle } from "@/lib/utils";
 
 export default function BoardsListing() {
+  const navigate = useNavigate();
   const { useGetCurrentUser, useLogout } = useAuth();
   const { data: user } = useGetCurrentUser();
   const { useGetBoards, useGetStarredBoards, useCreateBoard } = useBoards();
@@ -37,6 +38,9 @@ export default function BoardsListing() {
   const [backgroundColor, setBackgroundColor] = useState<string>(BOARD_BACKGROUNDS[0]);
 
   const workspaceId = workspaces[0]?.id;
+  
+  // Check if user is authenticated (not dummy user)
+  const isAuthenticated = user && user.id !== dummyUser.id;
   
   // Check if dummy data is being used
   const isDummyData = boards.every((board) =>
@@ -69,38 +73,63 @@ export default function BoardsListing() {
           </div>
 
           <div className="flex items-center gap-3">
-            {user ? <MemberAvatar user={user} size="md" /> : null}
-            <Button
-              variant="ghost"
-              className="text-white hover:bg-[#ffffff29]"
-              onClick={() => logout()}
-            >
-              Log out
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <MemberAvatar user={user} size="md" />
+                <Button
+                  variant="ghost"
+                  className="text-white hover:bg-[#ffffff29]"
+                  onClick={() => logout()}
+                >
+                  Log out
+                </Button>
+              </>
+            ) : (
+              <Button
+                className="bg-white text-[#0079bf] hover:bg-gray-100"
+                onClick={() => void navigate({ to: "/login" })}
+              >
+                Log in
+              </Button>
+            )}
           </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-8">
-        {isDummyData && (
+        {!isAuthenticated ? (
+          <Alert className="mb-6 border-blue-200 bg-blue-50">
+            <AlertCircle className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-800">
+              Please log in to view and manage your boards.
+            </AlertDescription>
+          </Alert>
+        ) : isDummyData ? (
           <Alert className="mb-6 border-amber-200 bg-amber-50">
             <AlertCircle className="h-4 w-4 text-amber-600" />
             <AlertDescription className="text-amber-800">
               Currently displaying sample data. Connect to the backend API to see your actual boards.
             </AlertDescription>
           </Alert>
-        )}
+        ) : null}
 
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-[#44546f]">
-              {user?.name ? `${user.name}'s workspace` : "Your workspace"}
+              {isAuthenticated && user?.name ? `${user.name}'s workspace` : "Your workspace"}
             </p>
             <h1 className="text-2xl font-bold text-[#172b4d]">Boards</h1>
           </div>
           <Button
             className="bg-[#0079bf] hover:bg-[#026aa7]"
-            onClick={() => setIsCreateOpen(true)}
+            disabled={!isAuthenticated}
+            onClick={() => {
+              if (!isAuthenticated) {
+                void navigate({ to: "/login" });
+                return;
+              }
+              setIsCreateOpen(true);
+            }}
           >
             <Plus className="size-4" />
             Create new board
