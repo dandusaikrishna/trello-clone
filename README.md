@@ -9,7 +9,7 @@ A full-stack collaborative task management application built with modern web tec
 - **Card Management** - Add, update, and delete cards with descriptions and metadata
 - **Drag & Drop** - Intuitive drag-and-drop interface powered by dnd-kit
 - **User Authentication** - Secure JWT-based authentication with bcrypt password hashing
-- **Real-time Updates** - React Query for efficient data synchronization
+- **Real-time Updates** - React Query for efficient data synchronization 
 - **Responsive Design** - Mobile-friendly UI built with Tailwind CSS
 - **Dark Mode Support** - Theme switching with next-themes
 - **Type Safety** - Full TypeScript implementation across frontend and backend
